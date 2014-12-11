@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 # Brunch app
 
 This is HTML5 application, built with [Brunch](http://brunch.io).
@@ -16,7 +15,4 @@ This is HTML5 application, built with [Brunch](http://brunch.io).
     * `public/` dir is fully auto-generated and served by HTTP server.  Write your code in `app/` dir.
     * Place static files you want to be copied from `app/assets/` to `public/`.
     * [Brunch site](http://brunch.io), [Chaplin site](http://chaplinjs.org)
-=======
-bloc-jams
-=========
->>>>>>> 46e27a88ba0fcccd108e8cca932a3e9b3b3ba6bc
+
