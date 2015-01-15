@@ -233,6 +233,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
+	"\/app\/scripts\/min\/album-min.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/app\/scripts\/min\/album-min.js",
+		"outputAbbreviatedPath": "\/app\/scripts\/min\/min\/album-min-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
 	"\/bower_components\/angular-mocks\/angular-mocks.js": {
 		"fileType": 64,
 		"ignore": 0,
@@ -1946,6 +1957,17 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
+	"\/public\/javascripts\/min\/app-min.js": {
+		"fileType": 64,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/public\/javascripts\/min\/app-min.js",
+		"outputAbbreviatedPath": "\/public\/javascripts\/min\/min\/app-min-min.js",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 1,
+		"syntaxCheckerStyle": 1
+		},
 	"\/public\/javascripts\/vendor.js": {
 		"fileType": 64,
 		"ignore": 0,
@@ -1957,6 +1979,15 @@
 		"outputStyle": 1,
 		"syntaxCheckerStyle": 1
 		},
+	"\/public\/profile.html": {
+		"fileType": 8192,
+		"ignore": 0,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/public\/profile.html",
+		"outputAbbreviatedPath": "No Output Path",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0
+		},
 	"\/public\/stylesheets\/_album.scss": {
 		"createSourceMap": 0,
 		"debugStyle": 0,
@@ -1966,6 +1997,22 @@
 		"ignoreWasSetByUser": 0,
 		"inputAbbreviatedPath": "\/public\/stylesheets\/_album.scss",
 		"outputAbbreviatedPath": "\/public\/css\/_album.css",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 0,
+		"shouldRunAutoprefixer": 0,
+		"shouldRunBless": 0,
+		"useLibsass": 0
+		},
+	"\/public\/stylesheets\/_buttons.scss": {
+		"createSourceMap": 0,
+		"debugStyle": 0,
+		"decimalPrecision": 10,
+		"fileType": 4,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/public\/stylesheets\/_buttons.scss",
+		"outputAbbreviatedPath": "\/public\/css\/_buttons.css",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 0,
@@ -2014,6 +2061,22 @@
 		"ignoreWasSetByUser": 0,
 		"inputAbbreviatedPath": "\/public\/stylesheets\/_player_bar.scss",
 		"outputAbbreviatedPath": "\/public\/css\/_player_bar.css",
+		"outputPathIsOutsideProject": 0,
+		"outputPathIsSetByUser": 0,
+		"outputStyle": 0,
+		"shouldRunAutoprefixer": 0,
+		"shouldRunBless": 0,
+		"useLibsass": 0
+		},
+	"\/public\/stylesheets\/_profile.scss": {
+		"createSourceMap": 0,
+		"debugStyle": 0,
+		"decimalPrecision": 10,
+		"fileType": 4,
+		"ignore": 1,
+		"ignoreWasSetByUser": 0,
+		"inputAbbreviatedPath": "\/public\/stylesheets\/_profile.scss",
+		"outputAbbreviatedPath": "\/public\/css\/_profile.css",
 		"outputPathIsOutsideProject": 0,
 		"outputPathIsSetByUser": 0,
 		"outputStyle": 0,

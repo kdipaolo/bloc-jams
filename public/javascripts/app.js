@@ -267,6 +267,7 @@ if (document.URL.match(/\/album.html/)) {
 require("./landing"); 
 require('./collection');
 require('./album');
+require("./profile");
 });
 
 ;require.register("scripts/collection", function(exports, require, module) {
@@ -358,6 +359,41 @@ require('./album');
  
     $('.selling-points .point').hover(onHoverAction, offHoverAction);
   });
+});
+
+;require.register("scripts/min/album-min", function(exports, require, module) {
+var albumPicasso={name:"The Colors",artist:"Pablo Picasso",label:"Cubism",year:"1881",albumArtUrl:"/images/album-placeholder.png",songs:[{name:"Blue",length:"4:26"},{name:"Green",length:"3:14"},{name:"Red",length:"5:01"},{name:"Pink",length:"3:21"},{name:"Magenta",length:"2:15"}]},albumMarconi={name:"The Telephone",artist:"Guglielmo Marconi",label:"EM",year:"1909",albumArtUrl:"/images/album-placeholder.png",songs:[{name:"Hello, Operator?",length:"1:01"},{name:"Ring, ring, ring",length:"5:01"},{name:"Fits in your pocket",length:"3:21"},{name:"Can you hear me now?",length:"3:14"},{name:"Wrong phone number",length:"2:15"}]},currentlyPlayingSong=null,createSongRow=function(n,a,e){var t='<tr>  <td class="song-number col-md-1" data-song-number="'+n+'">'+n+'</td>  <td class="col-md-9">'+a+'</td>  <td class="col-md-2">'+e+"</td></tr>",l=$(t),r=function(n){var a=$(this).find(".song-number"),e=a.data("song-number");e!==currentlyPlayingSong&&a.html('<a class="album-song-button"><i class="fa fa-play"></i></a>')},u=function(a){var e=$(this).find(".song-number");n!==currentlyPlayingSong&&e.html(n)},o=function(n){var a=$(this).data("song-number");if(null!==currentlyPlayingSong){var e=$('.song-number[data-song-number="'+currentlyPlayingSong+'"]');e.html(currentlyPlayingSong)}currentlyPlayingSong!==a?($(this).html('<a class="album-song-button"><i class="fa fa-pause"></i></a>'),currentlyPlayingSong=a):currentlyPlayingSong===a&&($(this).html('<a class="album-song-button"><i class="fa fa-play"></i></a>'),currentlyPlayingSong=null)};return l.find(".song-number").click(o),l.hover(r,u),l},changeAlbumView=function(n){var a=$(".album-title");a.text(n.name);var e=$(".album-artist");e.text(n.artist);var t=$(".album-meta-info");t.text(n.year+" on "+n.label);var l=$(".album-image img");l.attr("src",n.albumArtUrl);var r=$(".album-song-listing");r.empty();for(var u=n.songs,o=0;o<u.length;o++){var m=u[o],s=createSongRow(o+1,m.name,m.length);r.append(s)}},updateSeekPercentage=function(n,a){var e=n.width(),t=a.pageX-n.offset().left,l=t/e*100;l=Math.max(0,l),l=Math.min(100,l);var r=l+"%";n.find(".fill").width(r),n.find(".thumb").css({left:r})},setupSeekBars=function(){$seekBars=$(".player-bar .seek-bar"),$seekBars.click(function(n){updateSeekPercentage($(this),n)}),$seekBars.find(".thumb").mousedown(function(n){var a=$(this).parent();a.addClass("no-animate"),$(document).bind("mousemove.thumb",function(n){updateSeekPercentage(a,n)}),$(document).bind("mouseup.thumb",function(){a.addClass("no-animate"),$(document).unbind("mousemove.thumb"),$(document).unbind("mouseup.thumb")})})};document.URL.match(/\/album.html/)&&$(document).ready(function(){changeAlbumView(albumPicasso),setupSeekBars()});
+});
+
+;require.register("scripts/min/app-min", function(exports, require, module) {
+require("./landing"),require("./collection"),require("./album"),require("./profile");
+});
+
+;require.register("scripts/min/profile-min", function(exports, require, module) {
+var tabsContainer=".user-profile-tabs-container",selectTabHandler=function(e){$tab=$(this),$(tabsContainer+" li").removeClass("active"),$tab.parent().addClass("active"),selectedTabName=$tab.attr("href"),console.log(selectedTabName),$(".tab-pane").addClass("hidden"),$(selectedTabName).removeClass("hidden"),e.preventDefault()};document.URL.match(/\/profile.html/)&&$(document).ready(function(){var e=$(tabsContainer+" a");e.click(selectTabHandler),e[0].click()});
+});
+
+;require.register("scripts/profile", function(exports, require, module) {
+var tabsContainer = ".user-profile-tabs-container"
+ var selectTabHandler = function(event) {
+   $tab = $(this);
+   $(tabsContainer + " li").removeClass('active');
+   $tab.parent().addClass('active');
+   selectedTabName = $tab.attr('href');
+   console.log(selectedTabName);
+   $(".tab-pane").addClass('hidden');
+   $(selectedTabName).removeClass('hidden');
+   event.preventDefault();
+ };
+
+ 
+ if (document.URL.match(/\/profile.html/)) {
+   $(document).ready(function() {
+     var $tabs = $(tabsContainer + " a");
+     $tabs.click(selectTabHandler);
+     $tabs[0].click();
+   });
+ }
 });
 
 ;
