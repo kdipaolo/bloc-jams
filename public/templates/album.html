@@ -17,7 +17,7 @@
            <td class="song-number col-md-1">
            <span ng-switch="getSongState(song)">
              <span ng-switch-when="playing">
-              
+
                 <a class="album-song-button" ng-click="pauseSong(song)">
                  <i class="fa fa-pause"></i>
                </a>
@@ -37,4 +37,5 @@
       </tr>
      </table>
    </div>
+   <ng-include src="'/templates/player_bar.html'"></ng-include>
  </div>
