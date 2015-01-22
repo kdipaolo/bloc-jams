@@ -12,11 +12,11 @@
    albumArtUrl: '/images/album-placeholder.png',
  
    songs: [
-       { name: 'Blue', length: '4:26' },
-       { name: 'Green', length: '3:14' },
-       { name: 'Red', length: '5:01' },
-       { name: 'Pink', length: '3:21'},
-       { name: 'Magenta', length: '2:15'}
+        { name: 'Blue', length: '4:26', audioUrl: '/music/placeholders/blue' },
+       { name: 'Green', length: '3:14', audioUrl: '/music/placeholders/green' },
+       { name: 'Red', length: '5:01', audioUrl: '/music/placeholders/red' },
+       { name: 'Pink', length: '3:21', audioUrl: '/music/placeholders/pink' },
+       { name: 'Magenta', length: '2:15', audioUrl: '/music/placeholders/magenta' }
      ]
  };
  
@@ -74,6 +74,11 @@ blocJams.controller('Landing.controller', ['$scope', function($scope) {
      '/images/album-placeholders/album-9.jpg',
    ];
 }]);
+
+
+blocJams.controller('Song.controller', ['$scope', function($scope){
+   $scope.title = "Song Template"
+}])
 
 
 blocJams.controller('Collection.controller', ['$scope', function($scope){
