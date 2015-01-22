@@ -346,13 +346,17 @@ blocJams.controller('Song.controller', ['$scope', function($scope){
    $scope.title = "Song Template"
 }])
 
+blocJams.controller('Collection.controller', ['$scope','SongPlayer', function($scope, SongPlayer) {
 
-blocJams.controller('Collection.controller', ['$scope', function($scope){
    $scope.albums = [];
 
    for (var i = 0; i < 33; i++) {
      $scope.albums.push(angular.copy(albumPicasso));
    } 
+
+     $scope.playAlbum = function(album){
+     SongPlayer.setSong(album, album.songs[0]); // Targets first song in the array.
+   }
 }])
 
 blocJams.controller('Album.controller', ['$scope', 'SongPlayer', function($scope, SongPlayer) {
@@ -384,7 +388,7 @@ blocJams.controller('Album.controller', ['$scope', 'SongPlayer', function($scope
 
       $scope.playSong = function(song) {
         SongPlayer.setSong($scope.album, song);
-        SongPlayer.play();
+        
     };
  
     $scope.pauseSong = function(song) {
@@ -397,6 +401,9 @@ blocJams.controller('PlayerBar.controller', ['$scope', 'SongPlayer', function($s
  }]);
  
  blocJams.service('SongPlayer', function() {
+
+   var currentSoundFile = null;
+
  var trackIndex = function(album, song) {
      return album.songs.indexOf(song);
    };
@@ -409,9 +416,11 @@ blocJams.controller('PlayerBar.controller', ['$scope', 'SongPlayer', function($s
  
      play: function() {
        this.playing = true;
+       currentSoundFile.play();
      },
      pause: function() {
        this.playing = false;
+       currentSoundFile.pause();
      },
         next: function() {
        var currentTrackIndex = trackIndex(this.currentAlbum, this.currentSong);
@@ -419,7 +428,8 @@ blocJams.controller('PlayerBar.controller', ['$scope', 'SongPlayer', function($s
        if (currentTrackIndex >= this.currentAlbum.songs.length) {
          currentTrackIndex = 0;
        }
-       this.currentSong = this.currentAlbum.songs[currentTrackIndex];
+        var song = this.currentAlbum.songs[currentTrackIndex];
+      this.setSong(this.currentAlbum, song);
      },
        previous: function() {
        var currentTrackIndex = trackIndex(this.currentAlbum, this.currentSong);
@@ -428,11 +438,21 @@ blocJams.controller('PlayerBar.controller', ['$scope', 'SongPlayer', function($s
          currentTrackIndex = this.currentAlbum.songs.length - 1;
        }
  
-       this.currentSong = this.currentAlbum.songs[currentTrackIndex];
+        var song = this.currentAlbum.songs[currentTrackIndex];
+      this.setSong(this.currentAlbum, song);
      },
      setSong: function(album, song) {
+       if (currentSoundFile) {
+      currentSoundFile.stop();
+    }
        this.currentAlbum = album;
        this.currentSong = song;
+         currentSoundFile = new buzz.sound(song.audioUrl, {
+      formats: [ "mp3" ],
+      preload: true
+    });
+ 
+    this.play();
      }
    };
  });
@@ -536,7 +556,7 @@ var albumPicasso={name:"The Colors",artist:"Pablo Picasso",label:"Cubism",year:"
 });
 
 ;require.register("scripts/min/app-min", function(exports, require, module) {
-var albumPicasso={name:"The Colors",artist:"Pablo Picasso",label:"Cubism",year:"1881",albumArtUrl:"/images/album-placeholder.png",songs:[{name:"Blue",length:"4:26",audioUrl:"/music/placeholders/blue"},{name:"Green",length:"3:14",audioUrl:"/music/placeholders/green"},{name:"Red",length:"5:01",audioUrl:"/music/placeholders/red"},{name:"Pink",length:"3:21",audioUrl:"/music/placeholders/pink"},{name:"Magenta",length:"2:15",audioUrl:"/music/placeholders/magenta"}]},blocJams=angular.module("BlocJams",["ui.router"]);blocJams.config(["$stateProvider","$locationProvider",function(l,e){e.html5Mode(!0),l.state("collection",{url:"/collection",controller:"Collection.controller",templateUrl:"/templates/collection.html"}),l.state("landing",{url:"/",controller:"Landing.controller",templateUrl:"/templates/landing.html"}),l.state("song",{url:"/song",templateUrl:"/templates/song.html"}),l.state("album",{url:"/album",templateUrl:"/templates/album.html",controller:"Album.controller"})}]),blocJams.controller("Landing.controller",["$scope",function(l){l.subText="Turn the music up!",l.subTextClicked=function(){l.subText+="!"},l.albumURLs=["/images/album-placeholders/album-1.jpg","/images/album-placeholders/album-2.jpg","/images/album-placeholders/album-3.jpg","/images/album-placeholders/album-4.jpg","/images/album-placeholders/album-5.jpg","/images/album-placeholders/album-6.jpg","/images/album-placeholders/album-7.jpg","/images/album-placeholders/album-8.jpg","/images/album-placeholders/album-9.jpg"]}]),blocJams.controller("Song.controller",["$scope",function(l){l.title="Song Template"}]),blocJams.controller("Collection.controller",["$scope",function(l){l.albums=[];for(var e=0;33>e;e++)l.albums.push(angular.copy(albumPicasso))}]),blocJams.controller("Album.controller",["$scope","SongPlayer",function(l,e){l.album=angular.copy(albumPicasso);var o=null;l.onHoverSong=function(l){o=l,console.log("on")},l.offHoverSong=function(l){o=null,console.log("off")},l.getSongState=function(l){return l===e.currentSong&&e.playing?"playing":l===o?"hovered":"default"},l.playSong=function(o){e.setSong(l.album,o),e.play()},l.pauseSong=function(l){e.pause()}}]),blocJams.controller("PlayerBar.controller",["$scope","SongPlayer",function(l,e){l.songPlayer=e}]),blocJams.service("SongPlayer",function(){var l=function(l,e){return l.songs.indexOf(e)};return{currentSong:null,currentAlbum:null,playing:!1,play:function(){this.playing=!0},pause:function(){this.playing=!1},next:function(){var e=l(this.currentAlbum,this.currentSong);e++,e>=this.currentAlbum.songs.length&&(e=0),this.currentSong=this.currentAlbum.songs[e]},previous:function(){var e=l(this.currentAlbum,this.currentSong);e--,0>e&&(e=this.currentAlbum.songs.length-1),this.currentSong=this.currentAlbum.songs[e]},setSong:function(l,e){this.currentAlbum=l,this.currentSong=e}}});
+var albumPicasso={name:"The Colors",artist:"Pablo Picasso",label:"Cubism",year:"1881",albumArtUrl:"/images/album-placeholder.png",songs:[{name:"Blue",length:"4:26",audioUrl:"/music/placeholders/blue"},{name:"Green",length:"3:14",audioUrl:"/music/placeholders/green"},{name:"Red",length:"5:01",audioUrl:"/music/placeholders/red"},{name:"Pink",length:"3:21",audioUrl:"/music/placeholders/pink"},{name:"Magenta",length:"2:15",audioUrl:"/music/placeholders/magenta"}]},blocJams=angular.module("BlocJams",["ui.router"]);blocJams.config(["$stateProvider","$locationProvider",function(l,e){e.html5Mode(!0),l.state("collection",{url:"/collection",controller:"Collection.controller",templateUrl:"/templates/collection.html"}),l.state("landing",{url:"/",controller:"Landing.controller",templateUrl:"/templates/landing.html"}),l.state("song",{url:"/song",templateUrl:"/templates/song.html"}),l.state("album",{url:"/album",templateUrl:"/templates/album.html",controller:"Album.controller"})}]),blocJams.controller("Landing.controller",["$scope",function(l){l.subText="Turn the music up!",l.subTextClicked=function(){l.subText+="!"},l.albumURLs=["/images/album-placeholders/album-1.jpg","/images/album-placeholders/album-2.jpg","/images/album-placeholders/album-3.jpg","/images/album-placeholders/album-4.jpg","/images/album-placeholders/album-5.jpg","/images/album-placeholders/album-6.jpg","/images/album-placeholders/album-7.jpg","/images/album-placeholders/album-8.jpg","/images/album-placeholders/album-9.jpg"]}]),blocJams.controller("Song.controller",["$scope",function(l){l.title="Song Template"}]),blocJams.controller("Collection.controller",["$scope","SongPlayer",function(l,e){l.albums=[];for(var o=0;33>o;o++)l.albums.push(angular.copy(albumPicasso));l.playAlbum=function(l){e.setSong(l,l.songs[0])}}]),blocJams.controller("Album.controller",["$scope","SongPlayer",function(l,e){l.album=angular.copy(albumPicasso);var o=null;l.onHoverSong=function(l){o=l,console.log("on")},l.offHoverSong=function(l){o=null,console.log("off")},l.getSongState=function(l){return l===e.currentSong&&e.playing?"playing":l===o?"hovered":"default"},l.playSong=function(o){e.setSong(l.album,o)},l.pauseSong=function(l){e.pause()}}]),blocJams.controller("PlayerBar.controller",["$scope","SongPlayer",function(l,e){l.songPlayer=e}]),blocJams.service("SongPlayer",function(){var l=null,e=function(l,e){return l.songs.indexOf(e)};return{currentSong:null,currentAlbum:null,playing:!1,play:function(){this.playing=!0,l.play()},pause:function(){this.playing=!1,l.pause()},next:function(){var l=e(this.currentAlbum,this.currentSong);l++,l>=this.currentAlbum.songs.length&&(l=0);var o=this.currentAlbum.songs[l];this.setSong(this.currentAlbum,o)},previous:function(){var l=e(this.currentAlbum,this.currentSong);l--,0>l&&(l=this.currentAlbum.songs.length-1);var o=this.currentAlbum.songs[l];this.setSong(this.currentAlbum,o)},setSong:function(e,o){l&&l.stop(),this.currentAlbum=e,this.currentSong=o,l=new buzz.sound(o.audioUrl,{formats:["mp3"],preload:!0}),this.play()}}});
 });
 
 ;require.register("scripts/min/profile-min", function(exports, require, module) {
