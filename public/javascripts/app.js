@@ -399,9 +399,18 @@ $scope.pauseSong = function(song) {
 
  blocJams.controller('PlayerBar.controller', ['$scope', 'SongPlayer', function($scope, SongPlayer) {
    $scope.songPlayer = SongPlayer;
+
+
+  SongPlayer.onTimeUpdate(function(event, time){
+     $scope.$apply(function(){
+       $scope.playTime = time;
+     });
+   });
+ 
+
  }]);
  
- blocJams.service('SongPlayer', function() {
+ blocJams.service('SongPlayer', ['$rootScope', function($rootScope) {
 
    var currentSoundFile = null;
 
@@ -449,21 +458,29 @@ $scope.pauseSong = function(song) {
          currentSoundFile.setTime(time);
        }
      },
+       onTimeUpdate: function(callback) {
+      return $rootScope.$on('sound:timeupdate', callback);
+    },
      setSong: function(album, song) {
        if (currentSoundFile) {
         currentSoundFile.stop();
       }
       this.currentAlbum = album;
       this.currentSong = song;
+
       currentSoundFile = new buzz.sound(song.audioUrl, {
         formats: [ "mp3" ],
         preload: true
       });
 
+     currentSoundFile.bind('timeupdate', function(e){
+        $rootScope.$broadcast('sound:timeupdate', this.getTime());
+      });
+  
       this.play();
     }
   };
-});
+}]);
 
  // blocJams.directive('clickme', function(){
  //  return {
@@ -478,6 +495,8 @@ $scope.pauseSong = function(song) {
 
 
  blocJams.directive('slider', ['$document', function($document){
+
+
 
   // Returns a number between 0 and 1 to determine where the mouse event happened along the slider bar.
   var calculateSliderPercentFromMouseEvent = function($slider, event) {
@@ -575,6 +594,35 @@ $scope.pauseSong = function(song) {
   }}; //ends return
 
 }]);
+
+  blocJams.filter('timecode', function(){
+   return function(seconds) {
+     seconds = Number.parseFloat(seconds);
+ 
+     // Returned when no time is provided.
+     if (Number.isNaN(seconds)) {
+       return '-:--';
+     }
+ 
+     // make it a whole number
+     var wholeSeconds = Math.floor(seconds);
+ 
+     var minutes = Math.floor(wholeSeconds / 60);
+ 
+     remainingSeconds = wholeSeconds % 60;
+ 
+     var output = minutes + ':';
+ 
+     // zero pad seconds, so 9 seconds should be :09
+     if (remainingSeconds < 10) {
+       output += '0';
+     }
+ 
+     output += remainingSeconds;
+ 
+     return output;
+   }
+ })
 });
 
 ;require.register("scripts/collection", function(exports, require, module) {
@@ -673,7 +721,7 @@ var albumPicasso={name:"The Colors",artist:"Pablo Picasso",label:"Cubism",year:"
 });
 
 ;require.register("scripts/min/app-min", function(exports, require, module) {
-var albumPicasso={name:"The Colors",artist:"Pablo Picasso",label:"Cubism",year:"1881",albumArtUrl:"/images/album-placeholder.png",songs:[{name:"Blue",length:163.38,audioUrl:"/music/placeholders/blue"},{name:"Green",length:105.66,audioUrl:"/music/placeholders/green"},{name:"Red",length:270.14,audioUrl:"/music/placeholders/red"},{name:"Pink",length:154.81,audioUrl:"/music/placeholders/pink"},{name:"Magenta",length:375.92,audioUrl:"/music/placeholders/magenta"}]},blocJams=angular.module("BlocJams",["ui.router"]);blocJams.config(["$stateProvider","$locationProvider",function(e,l){l.html5Mode(!0),e.state("collection",{url:"/collection",controller:"Collection.controller",templateUrl:"/templates/collection.html"}),e.state("landing",{url:"/",controller:"Landing.controller",templateUrl:"/templates/landing.html"}),e.state("song",{url:"/song",templateUrl:"/templates/song.html"}),e.state("album",{url:"/album",templateUrl:"/templates/album.html",controller:"Album.controller"})}]),blocJams.controller("Landing.controller",["$scope",function(e){e.subText="Turn the music up!",e.subTextClicked=function(){e.subText+="!"},e.albumURLs=["/images/album-placeholders/album-1.jpg","/images/album-placeholders/album-2.jpg","/images/album-placeholders/album-3.jpg","/images/album-placeholders/album-4.jpg","/images/album-placeholders/album-5.jpg","/images/album-placeholders/album-6.jpg","/images/album-placeholders/album-7.jpg","/images/album-placeholders/album-8.jpg","/images/album-placeholders/album-9.jpg"]}]),blocJams.controller("Song.controller",["$scope",function(e){e.title="Song Template"}]),blocJams.controller("Collection.controller",["$scope","SongPlayer",function(e,l){e.albums=[];for(var n=0;33>n;n++)e.albums.push(angular.copy(albumPicasso));e.playAlbum=function(e){l.setSong(e,e.songs[0])}}]),blocJams.controller("Album.controller",["$scope","SongPlayer",function(e,l){e.album=angular.copy(albumPicasso);var n=null;e.onHoverSong=function(e){n=e,console.log("on")},e.offHoverSong=function(e){n=null,console.log("off")},e.getSongState=function(e){return e===l.currentSong&&l.playing?"playing":e===n?"hovered":"default"},e.playSong=function(n){l.setSong(e.album,n)},e.pauseSong=function(e){l.pause()}}]),blocJams.controller("PlayerBar.controller",["$scope","SongPlayer",function(e,l){e.songPlayer=l}]),blocJams.service("SongPlayer",function(){var e=null,l=function(e,l){return e.songs.indexOf(l)};return{currentSong:null,currentAlbum:null,playing:!1,play:function(){this.playing=!0,e.play()},pause:function(){this.playing=!1,e.pause()},next:function(){var e=l(this.currentAlbum,this.currentSong);e++,e>=this.currentAlbum.songs.length&&(e=0);var n=this.currentAlbum.songs[e];this.setSong(this.currentAlbum,n)},previous:function(){var e=l(this.currentAlbum,this.currentSong);e--,0>e&&(e=this.currentAlbum.songs.length-1);var n=this.currentAlbum.songs[e];this.setSong(this.currentAlbum,n)},seek:function(l){e&&e.setTime(l)},setSong:function(l,n){e&&e.stop(),this.currentAlbum=l,this.currentSong=n,e=new buzz.sound(n.audioUrl,{formats:["mp3"],preload:!0}),this.play()}}}),blocJams.directive("slider",["$document",function(e){var l=function(e,l){var n=l.pageX-e.offset().left,o=e.width(),t=n/o;return t=Math.max(0,t),t=Math.min(1,t)},n=function(e,l){return"number"==typeof e?e:"undefined"==typeof e?l:"string"==typeof e?Number(e):void 0};return{templateUrl:"/templates/directives/slider.html",replace:!0,restrict:"E",scope:{onChange:"&"},link:function(o,t,a){o.value=0,o.max=100;var u=$(t);console.log(a),a.$observe("value",function(e){o.value=n(e,0)}),a.$observe("max",function(e){o.max=n(e,100)||100});var r=function(){var e=o.value||0,l=o.max||100;return percent=e/l*100,percent+"%"};o.fillStyle=function(){return{width:r()}},o.thumbStyle=function(){return{left:r()}},o.onClickSlider=function(e){var n=l(u,e);o.value=n*o.max,notifyCallback(o.value)},o.trackThumb=function(){e.bind("mousemove.thumb",function(e){var t=l(u,e);o.$apply(function(){o.value=t*o.max,n(o.value)})}),e.bind("mouseup.thumb",function(){e.unbind("mousemove.thumb"),e.unbind("mouseup.thumb")});var n=function(e){"function"==typeof o.onChange&&o.onChange({value:e})}}}}}]);
+var albumPicasso={name:"The Colors",artist:"Pablo Picasso",label:"Cubism",year:"1881",albumArtUrl:"/images/album-placeholder.png",songs:[{name:"Blue",length:163.38,audioUrl:"/music/placeholders/blue"},{name:"Green",length:105.66,audioUrl:"/music/placeholders/green"},{name:"Red",length:270.14,audioUrl:"/music/placeholders/red"},{name:"Pink",length:154.81,audioUrl:"/music/placeholders/pink"},{name:"Magenta",length:375.92,audioUrl:"/music/placeholders/magenta"}]},blocJams=angular.module("BlocJams",["ui.router"]);blocJams.config(["$stateProvider","$locationProvider",function(e,n){n.html5Mode(!0),e.state("collection",{url:"/collection",controller:"Collection.controller",templateUrl:"/templates/collection.html"}),e.state("landing",{url:"/",controller:"Landing.controller",templateUrl:"/templates/landing.html"}),e.state("song",{url:"/song",templateUrl:"/templates/song.html"}),e.state("album",{url:"/album",templateUrl:"/templates/album.html",controller:"Album.controller"})}]),blocJams.controller("Landing.controller",["$scope",function(e){e.subText="Turn the music up!",e.subTextClicked=function(){e.subText+="!"},e.albumURLs=["/images/album-placeholders/album-1.jpg","/images/album-placeholders/album-2.jpg","/images/album-placeholders/album-3.jpg","/images/album-placeholders/album-4.jpg","/images/album-placeholders/album-5.jpg","/images/album-placeholders/album-6.jpg","/images/album-placeholders/album-7.jpg","/images/album-placeholders/album-8.jpg","/images/album-placeholders/album-9.jpg"]}]),blocJams.controller("Song.controller",["$scope",function(e){e.title="Song Template"}]),blocJams.controller("Collection.controller",["$scope","SongPlayer",function(e,n){e.albums=[];for(var l=0;33>l;l++)e.albums.push(angular.copy(albumPicasso));e.playAlbum=function(e){n.setSong(e,e.songs[0])}}]),blocJams.controller("Album.controller",["$scope","SongPlayer",function(e,n){e.album=angular.copy(albumPicasso);var l=null;e.onHoverSong=function(e){l=e,console.log("on")},e.offHoverSong=function(e){l=null,console.log("off")},e.getSongState=function(e){return e===n.currentSong&&n.playing?"playing":e===l?"hovered":"default"},e.playSong=function(l){n.setSong(e.album,l)},e.pauseSong=function(e){n.pause()}}]),blocJams.controller("PlayerBar.controller",["$scope","SongPlayer",function(e,n){e.songPlayer=n,n.onTimeUpdate(function(n,l){e.$apply(function(){e.playTime=l})})}]),blocJams.service("SongPlayer",["$rootScope",function(e){var n=null,l=function(e,n){return e.songs.indexOf(n)};return{currentSong:null,currentAlbum:null,playing:!1,play:function(){this.playing=!0,n.play()},pause:function(){this.playing=!1,n.pause()},next:function(){var e=l(this.currentAlbum,this.currentSong);e++,e>=this.currentAlbum.songs.length&&(e=0);var n=this.currentAlbum.songs[e];this.setSong(this.currentAlbum,n)},previous:function(){var e=l(this.currentAlbum,this.currentSong);e--,0>e&&(e=this.currentAlbum.songs.length-1);var n=this.currentAlbum.songs[e];this.setSong(this.currentAlbum,n)},seek:function(e){n&&n.setTime(e)},onTimeUpdate:function(n){return e.$on("sound:timeupdate",n)},setSong:function(l,o){n&&n.stop(),this.currentAlbum=l,this.currentSong=o,n=new buzz.sound(o.audioUrl,{formats:["mp3"],preload:!0}),n.bind("timeupdate",function(n){e.$broadcast("sound:timeupdate",this.getTime())}),this.play()}}}]),blocJams.directive("slider",["$document",function(e){var n=function(e,n){var l=n.pageX-e.offset().left,o=e.width(),t=l/o;return t=Math.max(0,t),t=Math.min(1,t)},l=function(e,n){return"number"==typeof e?e:"undefined"==typeof e?n:"string"==typeof e?Number(e):void 0};return{templateUrl:"/templates/directives/slider.html",replace:!0,restrict:"E",scope:{onChange:"&"},link:function(o,t,a){o.value=0,o.max=100;var r=$(t);console.log(a),a.$observe("value",function(e){o.value=l(e,0)}),a.$observe("max",function(e){o.max=l(e,100)||100});var u=function(){var e=o.value||0,n=o.max||100;return percent=e/n*100,percent+"%"};o.fillStyle=function(){return{width:u()}},o.thumbStyle=function(){return{left:u()}},o.onClickSlider=function(e){var l=n(r,e);o.value=l*o.max,notifyCallback(o.value)},o.trackThumb=function(){e.bind("mousemove.thumb",function(e){var t=n(r,e);o.$apply(function(){o.value=t*o.max,l(o.value)})}),e.bind("mouseup.thumb",function(){e.unbind("mousemove.thumb"),e.unbind("mouseup.thumb")});var l=function(e){"function"==typeof o.onChange&&o.onChange({value:e})}}}}}]),blocJams.filter("timecode",function(){return function(e){if(e=Number.parseFloat(e),Number.isNaN(e))return"-:--";var n=Math.floor(e),l=Math.floor(n/60);remainingSeconds=n%60;var o=l+":";return 10>remainingSeconds&&(o+="0"),o+=remainingSeconds}});
 });
 
 ;require.register("scripts/min/profile-min", function(exports, require, module) {
