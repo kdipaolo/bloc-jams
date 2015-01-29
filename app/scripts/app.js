@@ -72,13 +72,13 @@
   '/images/album-placeholders/album-6.jpg',
   '/images/album-placeholders/album-7.jpg',
   '/images/album-placeholders/album-8.jpg',
-  '/images/album-placeholders/album-9.jpg',
+  '/images/album-placeholders/album-9.jpg'
   ];
 }]);
 
 
  blocJams.controller('Song.controller', ['$scope', function($scope){
-   $scope.title = "Song Template"
+   $scope.title = "Song Template";
  }])
 
  blocJams.controller('Collection.controller', ['$scope','SongPlayer', function($scope, SongPlayer) {
@@ -206,59 +206,64 @@ $scope.pauseSong = function(song) {
 
  blocJams.directive('slider', ['$document', function($document){
 
-   // Returns a number between 0 and 1 to determine where the mouse event happened along the slider bar.
-   var calculateSliderPercentFromMouseEvent = function($slider, event) {
-     var offsetX =  event.pageX - $slider.offset().left; // Distance from left
-     var sliderWidth = $slider.width(); // Width of slider
-     var offsetXPercent = (offsetX  / sliderWidth);
-     offsetXPercent = Math.max(0, offsetXPercent);
-     offsetXPercent = Math.min(1, offsetXPercent);
-     return offsetXPercent;
-   }
+  // Returns a number between 0 and 1 to determine where the mouse event happened along the slider bar.
+  var calculateSliderPercentFromMouseEvent = function($slider, event) {
+    var offsetX =  event.pageX - $slider.offset().left; // Distance from left
+    var sliderWidth = $slider.width(); // Width of slider
+    var offsetXPercent = (offsetX  / sliderWidth);
+    offsetXPercent = Math.max(0, offsetXPercent);
+    offsetXPercent = Math.min(1, offsetXPercent);
+    return offsetXPercent;
+  };
 
-   return {
+  return {
     templateUrl: '/templates/directives/slider.html',
     replace: true,
     restrict: 'E',
-    scope: { }, // Creates a scope that exists only in this directive.
+    scope: {}, // Creates a scope that exists only in this directive.
+
     link: function(scope, element, attributes) {
-       // These values represent the progress into the song/volume bar, and its max value.
-       // For now, we're supplying arbitrary initial and max values.
-       scope.value = 0;
-       scope.max = 200;
-       var $seekBar = $(element);
+      // These values represent the progress into the song/volume bar, and its max value.
+      // For now, we're supplying arbitrary initial and max values.
+      scope.value = 0;
+      scope.max = 200;
+      var $seekBar = $(element);
 
-       var percentString = function () {
-         percent = Number(scope.value) / Number(scope.max)  * 100;
-         return percent + "%";
-       }
+      var percentString = function () {
+        percent = Number(scope.value) / Number(scope.max)  * 100;
+        return percent + "%";
+      };
 
-       scope.fillStyle = function() {
-         return {width: percentString()};
-       }
+      scope.fillStyle = function() {
+        return {width: percentString()};
+      };
 
-       scope.thumbStyle = function() {
-         return {left: percentString()};
-       }
-       scope.onClickSlider = function(event) {
+      scope.thumbStyle = function() {
+        return {left: percentString()};
+      };
+
+      scope.onClickSlider = function(event) {
         var percent = calculateSliderPercentFromMouseEvent($seekBar, event);
         scope.value = percent * scope.max;
         notifyCallback(scope.value);
-      }
+      };
 
       scope.trackThumb = function() {
         $document.bind('mousemove.thumb', function(event){
-          var percent = calculateSliderPercentFromMouseEvent($seekBar, event);
-          scope.$apply(function(){
-            scope.value = percent * scope.max;
-            notifyCallback(scope.value);
-          });
+        var percent = calculateSliderPercentFromMouseEvent($seekBar, event);
+        scope.$apply(function(){
+          scope.value = percent * scope.max;
+          notifyCallback(scope.value);
         });
+      });
 
-         //cleanup
-         $document.bind('mouseup.thumb', function(){
-           $document.unbind('mousemove.thumb');
-           $document.unbind('mouseup.thumb');
-         });
-       };
-     }
+      //cleanup
+      $document.bind('mouseup.thumb', function(){
+        $document.unbind('mousemove.thumb');
+        $document.unbind('mouseup.thumb');
+      });
+
+    }; //ends link function
+  }}; //ends return
+
+}]);
